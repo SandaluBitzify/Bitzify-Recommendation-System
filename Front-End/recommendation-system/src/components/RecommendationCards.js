@@ -32,35 +32,56 @@ const RecommendationCards = ({ recommendations }) => {
     )
   }
 
-  return (
-    <div className="recommendations-container">
-      <div className="recommendations-grid">
-        {recommendations.map((item, index) => (
-          <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
-            <div className="card-header">
-              <div className="card-icon">{getStatusIcon(item.already_installed)}</div>
-              <div className="card-status">
-                <span className="status-text">{getStatusText(item.already_installed)}</span>
+  // Filter recommendations into sections
+  const installedAddons = recommendations.filter((item) => item.already_installed === 1)
+  const notInstalledAddons = recommendations.filter((item) => item.already_installed === 0)
+  const suggestedAddons = recommendations.filter((item) => item.already_installed === "acumatica suggested")
+
+  const renderSection = (title, addons, sectionClass, emptyMessage) => {
+    if (addons.length === 0) return null
+
+    return (
+      <div className={`recommendation-section ${sectionClass}`}>
+        <div className="section-header">
+          <h3 className="section-title">{title}</h3>
+          <span className="section-count">{addons.length} add-ons</span>
+        </div>
+        <div className="recommendations-grid">
+          {addons.map((item, index) => (
+            <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
+              <div className="card-header">
+                <div className="card-icon">{getStatusIcon(item.already_installed)}</div>
+                <div className="card-status">
+                  <span className="status-text">{getStatusText(item.already_installed)}</span>
+                </div>
+              </div>
+
+              <div className="card-content">
+                <h3 className="addon-name">{item.addon}</h3>
+                <p className="addon-description">Enhance your Acumatica experience with this powerful add-on</p>
+              </div>
+
+              <div className="card-footer">
+                <button className="card-action-button">
+                  {item.already_installed === 1
+                    ? "View Details"
+                    : item.already_installed === 0
+                      ? "Install Now"
+                      : "Learn More"}
+                </button>
               </div>
             </div>
-
-            <div className="card-content">
-              <h3 className="addon-name">{item.addon}</h3>
-              <p className="addon-description">Enhance your Acumatica experience with this powerful add-on</p>
-            </div>
-
-            <div className="card-footer">
-              <button className="card-action-button">
-                {item.already_installed === 1
-                  ? "View Details"
-                  : item.already_installed === 0
-                    ? "Install Now"
-                    : "Learn More"}
-              </button>
-            </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
+    )
+  }
+
+  return (
+    <div className="recommendations-container">
+      {renderSection("✅ Installed Add-ons", installedAddons, "installed-section")}
+      {renderSection("❌ Available Add-ons", notInstalledAddons, "not-installed-section")}
+      {renderSection("💡 Acumatica Recommended", suggestedAddons, "suggested-section")}
     </div>
   )
 }
