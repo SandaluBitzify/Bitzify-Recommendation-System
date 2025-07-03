@@ -1,0 +1,226 @@
+.recommendations-container {
+  width: 100%;
+}
+
+.recommendations-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 25px;
+  padding: 20px 0;
+}
+
+.recommendation-card {
+  background: white;
+  border-radius: 16px;
+  padding: 25px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+  transition: all 0.3s ease;
+  border: 2px solid transparent;
+  position: relative;
+  overflow: hidden;
+}
+
+.recommendation-card::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  transition: all 0.3s ease;
+}
+
+.recommendation-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+}
+
+.card-installed {
+  border-color: #48bb78;
+}
+
+.card-installed::before {
+  background: linear-gradient(90deg, #48bb78, #38a169);
+}
+
+.card-not-installed {
+  border-color: #f56565;
+}
+
+.card-not-installed::before {
+  background: linear-gradient(90deg, #f56565, #e53e3e);
+}
+
+.card-suggested {
+  border-color: #4299e1;
+}
+
+.card-suggested::before {
+  background: linear-gradient(90deg, #4299e1, #3182ce);
+}
+
+.card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.card-icon {
+  font-size: 24px;
+  width: 50px;
+  height: 50px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f8fafc;
+}
+
+.card-installed .card-icon {
+  background: rgba(72, 187, 120, 0.1);
+}
+
+.card-not-installed .card-icon {
+  background: rgba(245, 101, 101, 0.1);
+}
+
+.card-suggested .card-icon {
+  background: rgba(66, 153, 225, 0.1);
+}
+
+.card-status {
+  text-align: right;
+}
+
+.status-text {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  padding: 6px 12px;
+  border-radius: 20px;
+}
+
+.card-installed .status-text {
+  background: rgba(72, 187, 120, 0.1);
+  color: #38a169;
+}
+
+.card-not-installed .status-text {
+  background: rgba(245, 101, 101, 0.1);
+  color: #e53e3e;
+}
+
+.card-suggested .status-text {
+  background: rgba(66, 153, 225, 0.1);
+  color: #3182ce;
+}
+
+.card-content {
+  margin-bottom: 25px;
+}
+
+.addon-name {
+  font-size: 20px;
+  font-weight: 700;
+  color: #1a202c;
+  margin-bottom: 10px;
+  line-height: 1.3;
+}
+
+.addon-description {
+  color: #718096;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.card-footer {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.card-action-button {
+  padding: 12px 24px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.card-installed .card-action-button {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  color: white;
+}
+
+.card-not-installed .card-action-button {
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+  color: white;
+}
+
+.card-suggested .card-action-button {
+  background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+}
+
+.card-action-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+}
+
+.no-recommendations {
+  text-align: center;
+  padding: 80px 20px;
+  color: #718096;
+}
+
+.no-recommendations-icon {
+  font-size: 64px;
+  margin-bottom: 20px;
+  opacity: 0.5;
+}
+
+.no-recommendations h3 {
+  font-size: 24px;
+  font-weight: 600;
+  margin-bottom: 10px;
+  color: #4a5568;
+}
+
+.no-recommendations p {
+  font-size: 16px;
+  max-width: 400px;
+  margin: 0 auto;
+  line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+  .recommendations-grid {
+    grid-template-columns: 1fr;
+    gap: 20px;
+  }
+
+  .recommendation-card {
+    padding: 20px;
+  }
+
+  .addon-name {
+    font-size: 18px;
+  }
+
+  .no-recommendations {
+    padding: 60px 20px;
+  }
+
+  .no-recommendations-icon {
+    font-size: 48px;
+  }
+
+  .no-recommendations h3 {
+    font-size: 20px;
+  }
+}

@@ -1,4 +1,5 @@
 from flask import Flask, request, jsonify
+from flask_cors import CORS
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
@@ -27,6 +28,7 @@ for _, row in relations_df.iterrows():
 
 # Create Flask app
 app = Flask(__name__)
+CORS(app)
 
 @app.route("/")
 def index():
