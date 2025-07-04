@@ -5,16 +5,16 @@ import "./App.css"
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false)
-  const [customerNumber, setCustomerNumber] = useState("")
+  const [loginData, setLoginData] = useState({})
 
-  const handleLogin = (custNumber) => {
-    setCustomerNumber(custNumber)
+  const handleLogin = (data) => {
+    setLoginData(data)
     setIsLoggedIn(true)
   }
 
   const handleLogout = () => {
     setIsLoggedIn(false)
-    setCustomerNumber("")
+    setLoginData({})
   }
 
   return (
@@ -22,7 +22,13 @@ function App() {
       {!isLoggedIn ? (
         <Login onLogin={handleLogin} />
       ) : (
-        <Dashboard customerNumber={customerNumber} onLogout={handleLogout} />
+        <Dashboard
+          customerNumber={loginData.customerNumber}
+          addonName={loginData.addonName}
+          companyName={loginData.companyName}
+          companySize={loginData.companySize}
+          onLogout={handleLogout}
+        />
       )}
     </div>
   )

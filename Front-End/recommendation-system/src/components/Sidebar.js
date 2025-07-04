@@ -1,12 +1,12 @@
 import "./Sidebar.css"
 
-const Sidebar = ({ customerNumber, onLogout }) => {
+const Sidebar = ({ customerNumber, companyName, companySize, onLogout }) => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <img
           src="/logo.png"
-          alt="Acumatica Logo"
+          alt="MYOB Logo"
           className="logo"
           onError={(e) => {
             e.target.src = "/placeholder.svg?height=60&width=150"
@@ -20,8 +20,9 @@ const Sidebar = ({ customerNumber, onLogout }) => {
             <span>{customerNumber.charAt(0)}</span>
           </div>
           <div className="user-details">
-            <h3>Customer</h3>
+            <h3>{companyName || "Customer"}</h3>
             <p>#{customerNumber}</p>
+            {companySize && <span className="company-size">{companySize}</span>}
           </div>
         </div>
 
