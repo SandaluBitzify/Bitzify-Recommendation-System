@@ -158,32 +158,63 @@
 
 .card-header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   margin-bottom: 20px;
 }
 
-.card-icon {
-  font-size: 24px;
-  width: 50px;
-  height: 50px;
+.addon-logo-container {
+  position: relative;
+  width: 130px;
+  height: 90px;
   border-radius: 12px;
+  overflow: hidden;
+  background: #f8fafc;
   display: flex;
   align-items: center;
   justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+}
+
+.addon-logo {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  padding: 1px;
+  transition: transform 0.3s ease;
+  display: block;
+}
+
+.recommendation-card:hover .addon-logo {
+  transform: scale(1.1);
+}
+
+.addon-logo-fallback {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
   background: #f8fafc;
 }
 
-.card-installed .card-icon {
+.card-installed .addon-logo-container {
   background: rgba(72, 187, 120, 0.1);
+  border: 2px solid rgba(72, 187, 120, 0.2);
 }
 
-.card-not-installed .card-icon {
+.card-not-installed .addon-logo-container {
   background: rgba(245, 101, 101, 0.1);
+  border: 2px solid rgba(245, 101, 101, 0.2);
 }
 
-.card-suggested .card-icon {
+.card-suggested .addon-logo-container {
   background: rgba(66, 153, 225, 0.1);
+  border: 2px solid rgba(66, 153, 225, 0.2);
 }
 
 .card-status {
@@ -216,6 +247,19 @@
 
 .card-content {
   margin-bottom: 25px;
+}
+
+.addon-category {
+  font-size: 12px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  color: #718096;
+  margin-bottom: 8px;
+  padding: 4px 8px;
+  background: #f8fafc;
+  border-radius: 6px;
+  display: inline-block;
 }
 
 .addon-name {
@@ -307,6 +351,11 @@
 
   .addon-name {
     font-size: 18px;
+  }
+
+  .addon-logo-container {
+    width: 50px;
+    height: 50px;
   }
 
   .no-recommendations {

@@ -22,6 +22,25 @@ const RecommendationCards = ({ recommendations }) => {
     return "❓"
   }
 
+  // Extract addon name from the full addon string
+  const extractAddonName = (fullAddonString) => {
+    const parts = fullAddonString.split(": ")
+    return parts.length > 1 ? parts[1].trim() : fullAddonString.trim()
+  }
+
+  // Extract category from the full addon string
+  const extractCategory = (fullAddonString) => {
+    const parts = fullAddonString.split(": ")
+    return parts.length > 1 ? parts[0].trim() : "General"
+  }
+
+  // Get logo path for addon - Updated to use public folder
+  const getAddonLogo = (fullAddonString) => {
+    const addonName = extractAddonName(fullAddonString)
+    // Use public folder path - React serves static files from public folder
+    return `/logos/${addonName}.png`
+  }
+
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="no-recommendations">
@@ -37,7 +56,7 @@ const RecommendationCards = ({ recommendations }) => {
   const notInstalledAddons = recommendations.filter((item) => item.already_installed === 0)
   const suggestedAddons = recommendations.filter((item) => item.already_installed === "acumatica suggested")
 
-  const renderSection = (title, addons, sectionClass, emptyMessage) => {
+  const renderSection = (title, addons, sectionClass) => {
     if (addons.length === 0) return null
 
     return (
@@ -47,31 +66,65 @@ const RecommendationCards = ({ recommendations }) => {
           <span className="section-count">{addons.length} add-ons</span>
         </div>
         <div className="recommendations-grid">
-          {addons.map((item, index) => (
-            <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
-              <div className="card-header">
-                <div className="card-icon">{getStatusIcon(item.already_installed)}</div>
-                <div className="card-status">
-                  <span className="status-text">{getStatusText(item.already_installed)}</span>
+          {addons.map((item, index) => {
+            const addonName = extractAddonName(item.addon)
+            const logoPath = getAddonLogo(item.addon)
+
+            // Debug logging
+            console.log(`Addon: ${item.addon}`)
+            console.log(`Extracted name: ${addonName}`)
+            console.log(`Logo path: ${logoPath}`)
+
+            return (
+              <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
+                <div className="card-header">
+                  <div className="addon-logo-container">
+                    <img
+                      src={logoPath || "/placeholder.svg"}
+                      alt={`${addonName} logo`}
+                      className="addon-logo"
+                      onLoad={(e) => {
+                        console.log(`Logo loaded successfully: ${logoPath}`)
+                        e.target.style.display = "block"
+                        if (e.target.nextSibling) {
+                          e.target.nextSibling.style.display = "none"
+                        }
+                      }}
+                      onError={(e) => {
+                        console.log(`Logo failed to load: ${logoPath}`)
+                        e.target.style.display = "none"
+                        if (e.target.nextSibling) {
+                          e.target.nextSibling.style.display = "flex"
+                        }
+                      }}
+                    />
+                    <div className="addon-logo-fallback">{getStatusIcon(item.already_installed)}</div>
+                  </div>
+                  <div className="card-status">
+                    <span className="status-text">{getStatusText(item.already_installed)}</span>
+                  </div>
+                </div>
+
+                <div className="card-content">
+                  <div className="addon-category">{extractCategory(item.addon)}</div>
+                  <h3 className="addon-name">{addonName}</h3>
+                  <p className="addon-description">
+                    Enhance your business operations with this powerful add-on solution
+                  </p>
+                </div>
+
+                <div className="card-footer">
+                  <button className="card-action-button">
+                    {item.already_installed === 1
+                      ? "View Details"
+                      : item.already_installed === 0
+                        ? "Install Now"
+                        : "Learn More"}
+                  </button>
                 </div>
               </div>
-
-              <div className="card-content">
-                <h3 className="addon-name">{item.addon}</h3>
-                <p className="addon-description">Enhance your Acumatica experience with this powerful add-on</p>
-              </div>
-
-              <div className="card-footer">
-                <button className="card-action-button">
-                  {item.already_installed === 1
-                    ? "View Details"
-                    : item.already_installed === 0
-                      ? "Install Now"
-                      : "Learn More"}
-                </button>
-              </div>
-            </div>
-          ))}
+            )
+          })}
         </div>
       </div>
     )
