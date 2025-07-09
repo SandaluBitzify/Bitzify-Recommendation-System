@@ -68,12 +68,15 @@ const RecommendationCards = ({ recommendations }) => {
         <div className="recommendations-grid">
           {addons.map((item, index) => {
             const addonName = extractAddonName(item.addon)
+            const category = extractCategory(item.addon)
             const logoPath = getAddonLogo(item.addon)
 
             // Debug logging
             console.log(`Addon: ${item.addon}`)
             console.log(`Extracted name: ${addonName}`)
+            console.log(`Category: ${category}`)
             console.log(`Logo path: ${logoPath}`)
+            console.log(`Status: ${item.already_installed}`)
 
             return (
               <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
@@ -106,10 +109,12 @@ const RecommendationCards = ({ recommendations }) => {
                 </div>
 
                 <div className="card-content">
-                  <div className="addon-category">{extractCategory(item.addon)}</div>
+                  <div className="addon-category">{category}</div>
                   <h3 className="addon-name">{addonName}</h3>
                   <p className="addon-description">
-                    Enhance your business operations with this powerful add-on solution
+                    {item.already_installed === "acumatica suggested"
+                      ? "Curated recommendation from Acumatica experts for your business needs"
+                      : "Enhance your business operations with this powerful add-on solution"}
                   </p>
                 </div>
 
