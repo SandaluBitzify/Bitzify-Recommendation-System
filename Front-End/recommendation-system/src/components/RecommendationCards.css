@@ -69,6 +69,19 @@
   color: #3182ce;
 }
 
+.ai-suggested-section .section-header {
+  border-bottom-color: #9f7aea;
+}
+
+.ai-suggested-section .section-title {
+  color: #805ad5;
+}
+
+.ai-suggested-section .section-count {
+  background: rgba(159, 122, 234, 0.1);
+  color: #805ad5;
+}
+
 /* Add some spacing between sections */
 .recommendation-section:not(:last-child) {
   margin-bottom: 50px;
@@ -156,6 +169,14 @@
   background: linear-gradient(90deg, #4299e1, #3182ce);
 }
 
+.card-ai-suggested {
+  border-color: #9f7aea;
+}
+
+.card-ai-suggested::before {
+  background: linear-gradient(90deg, #9f7aea, #805ad5);
+}
+
 .card-header {
   display: flex;
   align-items: flex-start;
@@ -165,8 +186,8 @@
 
 .addon-logo-container {
   position: relative;
-  width: 130px;
-  height: 90px;
+  width: 60px;
+  height: 60px;
   border-radius: 12px;
   overflow: hidden;
   background: #f8fafc;
@@ -180,7 +201,7 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
-  padding: 1px;
+  padding: 8px;
   transition: transform 0.3s ease;
   display: block;
 }
@@ -217,6 +238,11 @@
   border: 2px solid rgba(66, 153, 225, 0.2);
 }
 
+.card-ai-suggested .addon-logo-container {
+  background: rgba(159, 122, 234, 0.1);
+  border: 2px solid rgba(159, 122, 234, 0.2);
+}
+
 .card-status {
   text-align: right;
 }
@@ -243,6 +269,11 @@
 .card-suggested .status-text {
   background: rgba(66, 153, 225, 0.1);
   color: #3182ce;
+}
+
+.card-ai-suggested .status-text {
+  background: rgba(159, 122, 234, 0.1);
+  color: #805ad5;
 }
 
 .card-content {
@@ -305,6 +336,11 @@
 
 .card-suggested .card-action-button {
   background: linear-gradient(135deg, #4299e1, #3182ce);
+  color: white;
+}
+
+.card-ai-suggested .card-action-button {
+  background: linear-gradient(135deg, #9f7aea, #805ad5);
   color: white;
 }
 

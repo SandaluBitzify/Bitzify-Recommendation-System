@@ -1,6 +1,7 @@
+"use client"
 import "./Sidebar.css"
 
-const Sidebar = ({ customerNumber, companyName, companySize, onLogout }) => {
+const Sidebar = ({ customerNumber, companyName, companySize, onLogout, activeSection, onSectionChange }) => {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
@@ -28,7 +29,10 @@ const Sidebar = ({ customerNumber, companyName, companySize, onLogout }) => {
 
         <nav className="sidebar-nav">
           <ul>
-            <li className="nav-item active">
+            <li
+              className={`nav-item ${activeSection === "dashboard" ? "active" : ""}`}
+              onClick={() => onSectionChange("dashboard")}
+            >
               <span className="nav-icon">🏠</span>
               <span>Dashboard</span>
             </li>
@@ -43,6 +47,13 @@ const Sidebar = ({ customerNumber, companyName, companySize, onLogout }) => {
             <li className="nav-item">
               <span className="nav-icon">📋</span>
               <span>Reports</span>
+            </li>
+            <li
+              className={`nav-item ${activeSection === "chat" ? "active" : ""}`}
+              onClick={() => onSectionChange("chat")}
+            >
+              <span className="nav-icon">💬</span>
+              <span>Chat</span>
             </li>
           </ul>
         </nav>

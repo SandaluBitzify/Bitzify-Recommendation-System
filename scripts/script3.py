@@ -28,13 +28,13 @@ categories = {
     "Job Management": [
         "Velixo – Reporting, Budgeting & Data automation in Excel", "KIM", "SolBox SmartMove",
         "KIM Transport Management System", "Autodesk Construction Cloud",
-        "TOKN : The Next-Gen Enterprise App Platform for MYOB Acumatica", "biotime",
+        "TOKN", "biotime",
         "Buildlogic", "Acu Process Manufacturing", "RouteWise"
     ],
     "Manufacturing": [
         "Quality Management Suite for MYOB Acumatica", "NETSTOCK", "TRAILD Expense Management",
         "DSD Delivery", "Straightsell Order Approval Website for MYOB",
-        "TOKN : The Next-Gen Enterprise App Platform for MYOB Acumatica",
+        "TOKN The Next-Gen Enterprise App Platform for MYOB Acumatica",
         "Container Tracking", "Acu Process Manufacturing", "SyncHub", "ezyCollect"
     ],
     "Business Intelligence": [

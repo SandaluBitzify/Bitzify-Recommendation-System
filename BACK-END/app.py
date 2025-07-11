@@ -3,6 +3,12 @@ from flask_cors import CORS
 import pandas as pd
 import numpy as np
 from sklearn.metrics.pairwise import cosine_similarity
+import google.generativeai as genai
+import json
+import os
+
+# Configure Gemini API
+genai.configure(api_key="AIzaSyAlGmVN6uyryvwyhlm31W-nSpxHT2nFLRw")  # Replace with your actual API key
 
 # Load main dataset
 print("🔹 Loading dataset...")
@@ -25,6 +31,17 @@ for _, row in relations_df.iterrows():
     primary = row["Primary Addon"]
     related = [r for r in row[1:].values if pd.notna(r)]
     addon_relations[primary] = related
+
+# Load main categories for chat
+print("🔹 Loading main categories...")
+main_categories_df = pd.read_excel("Acumatica_Main_Categories.xlsx")
+
+# Build main categories dictionary
+main_categories = {}
+for _, row in main_categories_df.iterrows():
+    primary = row["Primary Addon"]
+    related = [r for r in row[1:].values if pd.notna(r)]
+    main_categories[primary] = related
 
 # Create Flask app
 app = Flask(__name__)
@@ -166,6 +183,64 @@ def recommend():
         "selected_addon": selected_addon,
         "recommended_addons": recommendation_list
     })
+
+@app.route("/chat", methods=["POST"])
+def chat():
+    try:
+        data = request.get_json()
+        
+        if not data or "message" not in data:
+            return jsonify({"error": "Please provide message"}), 400
+
+        user_message = data["message"]
+        
+        # Prepare context with addon categories data
+        categories_context = "Available Addon Categories and their related addons:\n\n"
+        for category, addons in main_categories.items():
+            categories_context += f"Category: {category}\n"
+            categories_context += f"Related Addons: {', '.join(addons)}\n\n"
+        
+        # Create the prompt for Gemini
+        prompt = f"""
+        You are an expert MYOB Acumatica addon consultant. Based on the user's question and the available addon categories below, provide helpful recommendations.
+
+        {categories_context}
+
+        User Question: {user_message}
+
+        Please respond in a conversational and helpful manner. If the user is asking for addon recommendations, suggest specific addons from the categories above that would be most relevant to their needs. Format your response as a friendly conversation, and if you're recommending specific addons, mention them clearly.
+
+        If you recommend specific addons, please format them exactly as they appear in the categories above (e.g., "Quality Management Suite for MYOB Acumatica").
+        """
+
+        # Initialize Gemini model
+        model = genai.GenerativeModel('gemini-1.5-flash')
+        
+        # Generate response
+        response = model.generate_content(prompt)
+        
+        # Extract recommended addons from the response
+        recommended_addons = []
+        response_text = response.text
+        
+        # Simple addon extraction logic - look for addon names in the response
+        for category, addons in main_categories.items():
+            for addon in addons:
+                if addon.lower() in response_text.lower():
+                    formatted_addon = f"{category}: {addon}"
+                    recommended_addons.append({
+                        "addon": formatted_addon,
+                        "already_installed": "ai_suggested"
+                    })
+        
+        return jsonify({
+            "response": response_text,
+            "recommended_addons": recommended_addons
+        })
+        
+    except Exception as e:
+        print(f"Error in chat endpoint: {str(e)}")
+        return jsonify({"error": f"Failed to process chat request: {str(e)}"}), 500
 
 if __name__ == "__main__":
     app.run(debug=True)
