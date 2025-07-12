@@ -44,6 +44,27 @@ const RecommendationCards = ({ recommendations }) => {
     return `/logos/${addonName}.png`
   }
 
+  // Format price display
+  const formatPrice = (price) => {
+    console.log("Formatting price:", price, "Type:", typeof price)
+
+    if (typeof price === "number") {
+      return `$${price.toLocaleString()}`
+    }
+    if (typeof price === "string") {
+      // If it already has $ sign, return as is
+      if (price.includes("$")) return price
+      // If it's a number string, format it
+      const numPrice = Number.parseFloat(price)
+      if (!isNaN(numPrice)) {
+        return `$${numPrice.toLocaleString()}`
+      }
+      // If it's "Contact for pricing" or similar, return as is
+      return price
+    }
+    return "Contact for pricing"
+  }
+
   if (!recommendations || recommendations.length === 0) {
     return (
       <div className="no-recommendations">
@@ -74,6 +95,15 @@ const RecommendationCards = ({ recommendations }) => {
             const addonName = extractAddonName(item.addon)
             const category = extractCategory(item.addon)
             const logoPath = getAddonLogo(item.addon)
+            const points = item.points || []
+            const price = item.price
+
+            console.log(`Card ${index}:`, {
+              addon: item.addon,
+              addonName,
+              price,
+              points,
+            })
 
             return (
               <div key={index} className={`recommendation-card ${getCardClass(item.already_installed)}`}>
@@ -106,13 +136,20 @@ const RecommendationCards = ({ recommendations }) => {
                 <div className="card-content">
                   <div className="addon-category">{category}</div>
                   <h3 className="addon-name">{addonName}</h3>
-                  <p className="addon-description">
-                    {item.already_installed === "acumatica suggested"
-                      ? "Curated recommendation from Acumatica experts for your business needs"
-                      : item.already_installed === "ai_suggested"
-                        ? "AI-powered recommendation based on your conversation"
-                        : "Enhance your business operations with this powerful add-on solution"}
-                  </p>
+
+                  {/* Feature Points */}
+                  {points && points.length > 0 && (
+                    <div className="addon-features">
+                      <ul className="feature-list">
+                        {points.slice(0, 3).map((point, pointIndex) => (
+                          <li key={pointIndex} className="feature-item">
+                            <span className="feature-icon">✓</span>
+                            <span className="feature-text">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
                 </div>
 
                 <div className="card-footer">
@@ -123,6 +160,11 @@ const RecommendationCards = ({ recommendations }) => {
                         ? "Install Now"
                         : "Learn More"}
                   </button>
+
+                  {/* Price in bottom right corner */}
+                  <div className="price-display">
+                    <span className="price-text">{formatPrice(price)}</span>
+                  </div>
                 </div>
               </div>
             )

@@ -8,7 +8,7 @@ import json
 import os
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyAlGmVN6uyryvwyhlm31W-nSpxHT2nFLRw")  # Replace with your actual API key
+genai.configure(api_key="")  
 
 # Load main dataset
 print("🔹 Loading dataset...")
@@ -43,9 +43,83 @@ for _, row in main_categories_df.iterrows():
     related = [r for r in row[1:].values if pd.notna(r)]
     main_categories[primary] = related
 
+# Load addon details
+print("🔹 Loading addon details...")
+addon_details_df = pd.read_excel("addon_details.xlsx")
+
+# Build addon details dictionary with better debugging
+addon_details = {}
+print("🔹 Processing addon details:")
+for _, row in addon_details_df.iterrows():
+    addon_name = str(row["Addon"]).strip()
+    points_raw = row["Points"] if pd.notna(row["Points"]) else ""
+    price_raw = row["Price"] if pd.notna(row["Price"]) else "Contact for pricing"
+    
+    # Split points by comma and clean them
+    points = [point.strip() for point in str(points_raw).split(",") if point.strip()] if points_raw else []
+    
+    # Handle price - ensure it's a number or string
+    if isinstance(price_raw, (int, float)):
+        price = float(price_raw)
+    else:
+        try:
+            price = float(str(price_raw).replace("$", "").replace(",", ""))
+        except:
+            price = str(price_raw)
+    
+    addon_details[addon_name] = {
+        "points": points,
+        "price": price
+    }
+    
+    print(f"  - {addon_name}: {len(points)} points, Price: {price}")
+
+print(f"🔹 Loaded {len(addon_details)} addon details")
+
 # Create Flask app
 app = Flask(__name__)
 CORS(app)
+
+def get_addon_details(addon_full_name):
+    """Extract addon name and get details from addon_details dictionary"""
+    print(f"🔍 Looking for details for: {addon_full_name}")
+    
+    # Extract addon name from full string (e.g., "Inventory Management: TIG Freight" -> "TIG Freight")
+    parts = addon_full_name.split(": ")
+    addon_name = parts[1].strip() if len(parts) > 1 else addon_full_name.strip()
+    
+    print(f"🔍 Extracted addon name: {addon_name}")
+    
+    # Look for exact match first
+    if addon_name in addon_details:
+        print(f"✅ Found exact match for: {addon_name}")
+        return addon_details[addon_name]
+    
+    # If no exact match, try case-insensitive exact match
+    for key in addon_details.keys():
+        if key.lower() == addon_name.lower():
+            print(f"✅ Found case-insensitive match: {key}")
+            return addon_details[key]
+    
+    # If still no match, try partial matching
+    for key in addon_details.keys():
+        if addon_name.lower() in key.lower() or key.lower() in addon_name.lower():
+            print(f"✅ Found partial match: {key}")
+            return addon_details[key]
+    
+    # Try matching with the full addon name (including category)
+    if addon_full_name in addon_details:
+        print(f"✅ Found full name match: {addon_full_name}")
+        return addon_details[addon_full_name]
+    
+    print(f"❌ No match found for: {addon_name}")
+    print(f"Available addon names: {list(addon_details.keys())[:5]}...")  # Show first 5 for debugging
+    
+    # Return default if no match found
+    return {
+        "points": ["Enhance business efficiency", "Streamline operations", "Improve productivity"],
+        "price": "Contact for pricing"
+    }
 
 @app.route("/")
 def index():
@@ -91,18 +165,24 @@ def recommend():
             recommended_sorted = sorted(cooccurrence_counts, key=cooccurrence_counts.get, reverse=True)
             recommendation_list = []
             for addon in recommended_sorted:
+                details = get_addon_details(addon)
                 recommendation_list.append({
                     "addon": addon,
-                    "already_installed": 0
+                    "already_installed": 0,
+                    "points": details["points"],
+                    "price": details["price"]
                 })
         else:
             # No co-occurrence: fallback to most popular addons in matching columns
             total_counts = df[matching_columns].sum().sort_values(ascending=False)
             recommendation_list = []
             for addon in total_counts.index:
+                details = get_addon_details(addon)
                 recommendation_list.append({
                     "addon": addon,
-                    "already_installed": 0
+                    "already_installed": 0,
+                    "points": details["points"],
+                    "price": details["price"]
                 })
 
     else:
@@ -135,10 +215,19 @@ def recommend():
         not_installed_related = []
 
         for addon in recommended_sorted:
+            details = get_addon_details(addon)
+            addon_data = {
+                "addon": addon,
+                "points": details["points"],
+                "price": details["price"]
+            }
+            
             if addon in current_installed:
-                installed_related.append({"addon": addon, "already_installed": 1})
+                addon_data["already_installed"] = 1
+                installed_related.append(addon_data)
             else:
-                not_installed_related.append({"addon": addon, "already_installed": 0})
+                addon_data["already_installed"] = 0
+                not_installed_related.append(addon_data)
 
         # Limit to 4 installed and 6 not installed
         installed_related = installed_related[:4]
@@ -173,9 +262,12 @@ def recommend():
         for related_addon in addon_relations[category_found]:
             # Format as "Category: Addon Name" to match the data structure
             formatted_addon = f"{category_found}: {related_addon}"
+            details = get_addon_details(formatted_addon)
             recommendation_list.append({
                 "addon": formatted_addon,
-                "already_installed": "acumatica suggested"
+                "already_installed": "acumatica suggested",
+                "points": details["points"],
+                "price": details["price"]
             })
 
     return jsonify({
@@ -228,9 +320,12 @@ def chat():
             for addon in addons:
                 if addon.lower() in response_text.lower():
                     formatted_addon = f"{category}: {addon}"
+                    details = get_addon_details(formatted_addon)
                     recommended_addons.append({
                         "addon": formatted_addon,
-                        "already_installed": "ai_suggested"
+                        "already_installed": "ai_suggested",
+                        "points": details["points"],
+                        "price": details["price"]
                     })
         
         return jsonify({

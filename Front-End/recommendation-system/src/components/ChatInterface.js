@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect } from "react"
+import { useState, useRef, useEffect, useCallback } from "react"
 import RecommendationCards from "./RecommendationCards"
 import "./ChatInterface.css"
 
@@ -18,6 +18,11 @@ const ChatInterface = () => {
   const messagesEndRef = useRef(null)
   const inputRef = useRef(null)
 
+  const [isListening, setIsListening] = useState(false)
+  const [speechSupported, setSpeechSupported] = useState(false)
+  const [transcript, setTranscript] = useState("")
+  const recognitionRef = useRef(null)
+
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
   }
@@ -25,6 +30,63 @@ const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom()
   }, [messages])
+
+  // Initialize speech recognition
+  useEffect(() => {
+    if ("webkitSpeechRecognition" in window || "SpeechRecognition" in window) {
+      setSpeechSupported(true)
+
+      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition
+      recognitionRef.current = new SpeechRecognition()
+
+      recognitionRef.current.continuous = false
+      recognitionRef.current.interimResults = true
+      recognitionRef.current.lang = "en-US"
+
+      recognitionRef.current.onstart = () => {
+        setIsListening(true)
+        setTranscript("")
+      }
+
+      recognitionRef.current.onresult = (event) => {
+        let finalTranscript = ""
+        let interimTranscript = ""
+
+        for (let i = event.resultIndex; i < event.results.length; i++) {
+          const transcript = event.results[i][0].transcript
+          if (event.results[i].isFinal) {
+            finalTranscript += transcript
+          } else {
+            interimTranscript += transcript
+          }
+        }
+
+        if (finalTranscript) {
+          setInputMessage((prev) => prev + finalTranscript)
+          setTranscript("")
+        } else {
+          setTranscript(interimTranscript)
+        }
+      }
+
+      recognitionRef.current.onerror = (event) => {
+        console.error("Speech recognition error:", event.error)
+        setIsListening(false)
+        setTranscript("")
+      }
+
+      recognitionRef.current.onend = () => {
+        setIsListening(false)
+        setTranscript("")
+      }
+    }
+
+    return () => {
+      if (recognitionRef.current) {
+        recognitionRef.current.stop()
+      }
+    }
+  }, [])
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return
@@ -92,6 +154,30 @@ const ChatInterface = () => {
     return timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })
   }
 
+  const startListening = useCallback(() => {
+    if (recognitionRef.current && speechSupported && !isListening) {
+      try {
+        recognitionRef.current.start()
+      } catch (error) {
+        console.error("Error starting speech recognition:", error)
+      }
+    }
+  }, [speechSupported, isListening])
+
+  const stopListening = useCallback(() => {
+    if (recognitionRef.current && isListening) {
+      recognitionRef.current.stop()
+    }
+  }, [isListening])
+
+  const toggleListening = useCallback(() => {
+    if (isListening) {
+      stopListening()
+    } else {
+      startListening()
+    }
+  }, [isListening, startListening, stopListening])
+
   return (
     <div className="chat-interface">
       <div className="chat-header">
@@ -144,18 +230,48 @@ const ChatInterface = () => {
           <div className="chat-input-wrapper">
             <textarea
               ref={inputRef}
-              value={inputMessage}
+              value={inputMessage + (transcript ? ` ${transcript}` : "")}
               onChange={(e) => setInputMessage(e.target.value)}
               onKeyPress={handleKeyPress}
-              placeholder="Ask me about addon recommendations..."
-              className="chat-input"
+              placeholder={isListening ? "Listening... Speak now!" : "Ask me about addon recommendations..."}
+              className={`chat-input ${isListening ? "listening" : ""}`}
               rows="1"
               disabled={isLoading}
             />
+
+            {speechSupported && (
+              <button
+                onClick={toggleListening}
+                disabled={isLoading}
+                className={`voice-button ${isListening ? "listening" : ""}`}
+                title={isListening ? "Stop listening" : "Start voice input"}
+              >
+                <span className="voice-icon">{isListening ? "🔴" : "🎤"}</span>
+                {isListening && (
+                  <div className="voice-animation">
+                    <div className="pulse-ring"></div>
+                    <div className="pulse-ring delay-1"></div>
+                    <div className="pulse-ring delay-2"></div>
+                  </div>
+                )}
+              </button>
+            )}
+
             <button onClick={sendMessage} disabled={!inputMessage.trim() || isLoading} className="send-button">
               <span className="send-icon">📤</span>
             </button>
           </div>
+          {isListening && (
+            <div className="voice-status">
+              <div className="voice-status-content">
+                <span className="voice-status-icon">🎤</span>
+                <span className="voice-status-text">{transcript ? `"${transcript}"` : "Listening... Speak now!"}</span>
+                <button onClick={stopListening} className="stop-voice-button">
+                  Stop
+                </button>
+              </div>
+            </div>
+          )}
           <div className="input-suggestions">
             <button
               onClick={() => setInputMessage("I use inventory management a lot. What addons do you suggest?")}

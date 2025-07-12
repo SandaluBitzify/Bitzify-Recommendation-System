@@ -199,7 +199,7 @@
 .chat-input-wrapper {
   display: flex;
   align-items: flex-end;
-  gap: 12px;
+  gap: 8px;
   background: #f8fafc;
   border: 2px solid #e2e8f0;
   border-radius: 20px;
@@ -313,4 +313,223 @@
   .suggestion-chip {
     text-align: center;
   }
+
+  .voice-button {
+    width: 36px;
+    height: 36px;
+  }
+
+  .voice-icon {
+    font-size: 14px;
+  }
+
+  .voice-status {
+    margin-top: 10px;
+    padding: 10px 12px;
+  }
+
+  .voice-status-content {
+    gap: 8px;
+  }
+
+  .voice-status-text {
+    font-size: 13px;
+  }
+
+  .stop-voice-button {
+    padding: 4px 8px;
+    font-size: 11px;
+  }
+}
+
+/* Accessibility improvements */
+.voice-button:focus {
+  outline: 2px solid #667eea;
+  outline-offset: 2px;
+}
+
+.voice-button[aria-pressed="true"] {
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+}
+
+/* Loading state for voice button */
+.voice-button.loading {
+  opacity: 0.6;
+  cursor: not-allowed;
+  animation: none;
+}
+
+/* Voice Input Styles */
+.voice-button {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  border: none;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+
+.voice-button:hover:not(:disabled) {
+  transform: scale(1.05);
+  box-shadow: 0 5px 15px rgba(72, 187, 120, 0.3);
+}
+
+.voice-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.voice-button.listening {
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+  animation: voicePulse 1.5s ease-in-out infinite;
+}
+
+.voice-button.listening:hover {
+  box-shadow: 0 5px 15px rgba(245, 101, 101, 0.3);
+}
+
+.voice-icon {
+  font-size: 16px;
+  z-index: 2;
+  position: relative;
+}
+
+.voice-animation {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 100%;
+  height: 100%;
+}
+
+.pulse-ring {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 40px;
+  height: 40px;
+  border: 2px solid rgba(245, 101, 101, 0.6);
+  border-radius: 50%;
+  animation: voiceRipple 2s linear infinite;
+}
+
+.pulse-ring.delay-1 {
+  animation-delay: 0.5s;
+}
+
+.pulse-ring.delay-2 {
+  animation-delay: 1s;
+}
+
+@keyframes voicePulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes voiceRipple {
+  0% {
+    transform: translate(-50%, -50%) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2);
+    opacity: 0;
+  }
+}
+
+/* Voice Status Indicator */
+.voice-status {
+  margin-top: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(245, 101, 101, 0.1), rgba(229, 62, 62, 0.05));
+  border: 2px solid rgba(245, 101, 101, 0.2);
+  border-radius: 12px;
+  animation: voiceStatusSlide 0.3s ease-out;
+}
+
+.voice-status-content {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.voice-status-icon {
+  font-size: 18px;
+  animation: voiceBounce 1s ease-in-out infinite;
+}
+
+.voice-status-text {
+  flex: 1;
+  color: #e53e3e;
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.stop-voice-button {
+  background: #f56565;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.stop-voice-button:hover {
+  background: #e53e3e;
+  transform: translateY(-1px);
+}
+
+@keyframes voiceStatusSlide {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes voiceBounce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.2);
+  }
+}
+
+/* Chat Input Listening State */
+.chat-input.listening {
+  border-color: #f56565 !important;
+  box-shadow: 0 0 0 3px rgba(245, 101, 101, 0.1) !important;
+  background: rgba(245, 101, 101, 0.02);
+}
+
+.chat-input.listening::placeholder {
+  color: #f56565;
+  font-weight: 600;
+}
+
+/* Voice not supported message */
+.voice-not-supported {
+  display: none;
 }
