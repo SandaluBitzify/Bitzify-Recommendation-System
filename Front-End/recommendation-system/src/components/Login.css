@@ -13,7 +13,7 @@
   left: 0;
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #2d3748 0%, #7b14ef 100%);
 }
 
 .floating-shapes {
@@ -25,8 +25,8 @@
 .shape {
   position: absolute;
   border-radius: 50%;
-  background: rgba(255, 255, 255, 0.1);
-  animation: float 6s ease-in-out infinite;
+  background: rgba(255, 255, 255, 0.185);
+  animation: float 4s ease-in-out infinite;
 }
 
 .shape-1 {

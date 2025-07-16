@@ -118,7 +118,7 @@ def get_addon_details(addon_full_name):
     # Return default if no match found
     return {
         "points": ["Enhance business efficiency", "Streamline operations", "Improve productivity"],
-        "price": "Contact for pricing"
+        "price": "50"
     }
 
 @app.route("/")
