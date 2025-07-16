@@ -8,7 +8,7 @@ const ChatInterface = () => {
       id: 1,
       type: "bot",
       content:
-        "Hello! I'm your MYOB Acumatica addon consultant. How can I help you find the perfect addons for your business today?",
+        "Hello! I'm your Bitzify consultant. How can I help you find the perfect addons for your business today?",
       timestamp: new Date(),
     },
   ])

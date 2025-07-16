@@ -1,4 +1,3 @@
-"use client"
 import "./Sidebar.css"
 
 const Sidebar = ({ customerNumber, companyName, companySize, onLogout, activeSection, onSectionChange }) => {

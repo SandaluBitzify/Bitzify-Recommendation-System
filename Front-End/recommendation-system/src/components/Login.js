@@ -37,7 +37,7 @@ const Login = ({ onLogin }) => {
 
       <div className="login-card">
         <div className="login-header">
-          <h1>MYOB Recommendation System</h1>
+          <h1>Bitzify Recommendation System</h1>
           <p>Enter your details to access personalized add-on recommendations</p>
         </div>
 

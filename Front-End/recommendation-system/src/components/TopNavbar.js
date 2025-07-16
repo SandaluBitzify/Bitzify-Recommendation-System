@@ -5,7 +5,7 @@ const TopNavbar = () => {
     <div className="top-navbar">
       <div className="navbar-content">
         <div className="navbar-title">
-          <h2>MYOB Add-on Recommendations</h2>
+          <h2>Bitzify Add-on Recommendations</h2>
           <p>Discover the perfect add-ons for your business needs</p>
         </div>
 
