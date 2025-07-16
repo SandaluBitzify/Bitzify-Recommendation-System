@@ -51,6 +51,8 @@
   font-weight: 700;
   font-size: 18px;
   margin-right: 15px;
+  outline: 2px solid #ffffffb4;
+  outline-offset: 2px;
 }
 
 .user-details h3 {
