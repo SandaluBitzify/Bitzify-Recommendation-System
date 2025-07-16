@@ -8,7 +8,7 @@ import json
 import os
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyAlGmVN6uyryvwyhlm31W-nSpxHT2nFLRw")  
+genai.configure(api_key="")  
 
 # Load main dataset
 print("🔹 Loading dataset...")
